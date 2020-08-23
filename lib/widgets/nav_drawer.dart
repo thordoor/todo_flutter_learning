@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/lists_collection.dart';
+import 'package:todo/items_collection_pool.dart';
 
 class NavDrawer extends StatelessWidget {
   @override
@@ -20,16 +20,19 @@ class NavDrawer extends StatelessWidget {
                 ),
               ),
             ),
-            Consumer<ListsCollection>(
-              builder: (context, listsCollection, child) => ListView.builder(
+            Consumer<ItemsCollectionPool>(
+              builder: (context, pool, child) => ListView.builder(
                 padding: EdgeInsets.all(0),
                 shrinkWrap: true,
-                itemCount: listsCollection.lists.length,
+                itemCount: pool.lists.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    onTap: () {},
+                    onTap: () {
+                      pool.setCurrentCollection(pool.lists.elementAt(index));
+                      Navigator.pop(context);
+                    },
                     title: Text(
-                      listsCollection.lists.elementAt(index).title,
+                      pool.lists.elementAt(index).title,
                       style: TextStyle(color: Colors.white),
                     ),
                     trailing: Icon(

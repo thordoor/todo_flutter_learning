@@ -3,17 +3,17 @@ import 'package:provider/provider.dart';
 import 'package:todo/screens/items_screen.dart';
 import 'package:todo/screens/edit_screen.dart';
 import 'package:todo/items_collection.dart';
-import 'package:todo/lists_collection.dart';
+import 'package:todo/items_collection_pool.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => ItemsCollection(),
+          create: (context) => ItemsCollectionPool(),
         ),
         ChangeNotifierProvider(
-          create: (context) => ListsCollection(),
+          create: (context) => ItemsCollection(),
         ),
       ],
       child: MaterialApp(

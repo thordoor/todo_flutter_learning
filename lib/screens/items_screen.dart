@@ -1,32 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:todo/items_collection.dart';
 import 'package:provider/provider.dart';
+import 'package:todo/items_collection_pool.dart';
 import 'package:todo/widgets/nav_drawer.dart';
 
 class ItemsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var pool = context.watch<ItemsCollectionPool>();
+    var currentTodoList = pool.currentlySelectedCollection;
     return Scaffold(
       drawer: NavDrawer(),
       appBar: AppBar(
-        title: Text('Todo list'),
+        title: Text(pool.currentlySelectedCollection.title),
       ),
       body: SafeArea(
         child: Column(
           children: [
             Consumer<ItemsCollection>(
-              builder: (context, list, child) => ListView.builder(
+              builder: (context, list, _) => ListView.builder(
                 shrinkWrap: true,
-                itemCount: list.items.length,
+                itemCount: currentTodoList.items.length,
                 itemBuilder: (context, index) {
                   return CheckboxListTile(
                     onChanged: (val) {
-                      list.toggleIsChecked(index, val);
+                      print(val);
+                      currentTodoList.toggleIsChecked(index, val);
                     },
                     controlAffinity: ListTileControlAffinity.leading,
-                    value: list.items.elementAt(index).isChecked,
+                    value: currentTodoList.items.elementAt(index).isChecked,
                     title: Text(
-                      list.items.elementAt(index).title,
+                      '${currentTodoList.title} ${currentTodoList.items.elementAt(index).title}',
                     ),
                   );
                 },
