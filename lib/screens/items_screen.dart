@@ -70,7 +70,36 @@ class ItemsScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) {
+                return SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8.0),
+                          child: TextField(
+                            autofocus: true,
+                            decoration: InputDecoration(
+                                hintText: 'Enter new todo item.'),
+                          ),
+                        ),
+                        FlatButton(
+                          onPressed: () {},
+                          child: Text('Save!'),
+                          color: Colors.green,
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              });
+        },
         child: Icon(Icons.add),
       ),
     );
