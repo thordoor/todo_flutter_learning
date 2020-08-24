@@ -15,7 +15,6 @@ class ItemsCollection extends ChangeNotifier {
 
   void toggleIsChecked(int index, bool newValue) {
     _items.elementAt(index).isChecked = newValue;
-    print(_items.elementAt(index).isChecked);
     notifyListeners();
   }
 

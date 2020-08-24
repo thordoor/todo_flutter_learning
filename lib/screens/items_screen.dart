@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:todo/items_collection.dart';
 import 'package:provider/provider.dart';
+import 'package:todo/models/item.dart';
 import 'package:todo/items_collection_pool.dart';
 import 'package:todo/widgets/nav_drawer.dart';
 
-class ItemsScreen extends StatelessWidget {
+class ItemsScreen extends StatefulWidget {
+  @override
+  _ItemsScreenState createState() => _ItemsScreenState();
+}
+
+class _ItemsScreenState extends State<ItemsScreen> {
+  String newItemValue = '';
   @override
   Widget build(BuildContext context) {
     var pool = context.watch<ItemsCollectionPool>();
@@ -24,8 +31,9 @@ class ItemsScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return CheckboxListTile(
                     onChanged: (val) {
-                      print(val);
-                      currentTodoList.toggleIsChecked(index, val);
+                      setState(() {
+                        currentTodoList.toggleIsChecked(index, val);
+                      });
                     },
                     controlAffinity: ListTileControlAffinity.leading,
                     value: currentTodoList.items.elementAt(index).isChecked,
@@ -84,13 +92,26 @@ class ItemsScreen extends StatelessWidget {
                         Container(
                           padding: EdgeInsets.all(8.0),
                           child: TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                newItemValue = value;
+                              });
+                            },
                             autofocus: true,
                             decoration: InputDecoration(
                                 hintText: 'Enter new todo item.'),
                           ),
                         ),
                         FlatButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            currentTodoList.add(
+                              Item(
+                                title: newItemValue,
+                                isChecked: false,
+                              ),
+                            );
+                            Navigator.pop(context);
+                          },
                           child: Text('Save!'),
                           color: Colors.green,
                         )
