@@ -12,6 +12,7 @@ class ItemsScreen extends StatefulWidget {
 
 class _ItemsScreenState extends State<ItemsScreen> {
   String newItemValue = '';
+  String selectText = 'Select all';
   @override
   Widget build(BuildContext context) {
     var pool = context.watch<ItemsCollectionPool>();
@@ -24,25 +25,23 @@ class _ItemsScreenState extends State<ItemsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Consumer<ItemsCollection>(
-              builder: (context, list, _) => ListView.builder(
-                shrinkWrap: true,
-                itemCount: currentTodoList.items.length,
-                itemBuilder: (context, index) {
-                  return CheckboxListTile(
-                    onChanged: (val) {
-                      setState(() {
-                        currentTodoList.toggleIsChecked(index, val);
-                      });
-                    },
-                    controlAffinity: ListTileControlAffinity.leading,
-                    value: currentTodoList.items.elementAt(index).isChecked,
-                    title: Text(
-                      '${currentTodoList.title} ${currentTodoList.items.elementAt(index).title}',
-                    ),
-                  );
-                },
-              ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: currentTodoList.items.length,
+              itemBuilder: (context, index) {
+                return CheckboxListTile(
+                  onChanged: (val) {
+                    setState(() {
+                      currentTodoList.toggleIsChecked(index, val);
+                    });
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                  value: currentTodoList.items.elementAt(index).isChecked,
+                  title: Text(
+                    '${currentTodoList.title} ${currentTodoList.items.elementAt(index).title}',
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -58,9 +57,28 @@ class _ItemsScreenState extends State<ItemsScreen> {
             children: [
               Expanded(
                 child: RaisedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    List checkedItems = [];
+                    for (Item item in currentTodoList.items) {
+                      if (item.isChecked == true) {
+                        checkedItems.add(item);
+                      }
+                    }
+                    if (checkedItems.length == currentTodoList.items.length) {
+                      for (Item item in currentTodoList.items) {
+                        item.isChecked = false;
+                        selectText = 'Select all';
+                      }
+                    } else {
+                      for (Item item in currentTodoList.items) {
+                        item.isChecked = true;
+                        selectText = 'Deselect all';
+                      }
+                    }
+                    setState(() {});
+                  },
                   icon: Icon(Icons.select_all),
-                  label: Text('Select all'),
+                  label: Text(selectText),
                 ),
               ),
               SizedBox(
@@ -110,6 +128,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                 isChecked: false,
                               ),
                             );
+                            setState(() {});
                             Navigator.pop(context);
                           },
                           child: Text('Save!'),
