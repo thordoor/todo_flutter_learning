@@ -38,7 +38,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                   controlAffinity: ListTileControlAffinity.leading,
                   value: currentTodoList.items.elementAt(index).isChecked,
                   title: Text(
-                    '${currentTodoList.title} ${currentTodoList.items.elementAt(index).title}',
+                    '${currentTodoList.items.elementAt(index).title}',
                   ),
                 );
               },
