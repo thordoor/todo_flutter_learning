@@ -16,7 +16,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
   @override
   Widget build(BuildContext context) {
     var pool = context.watch<ItemsCollectionPool>();
-    var currentTodoList = pool.currentlySelectedCollection;
+    ItemsCollection currentTodoList = pool.currentlySelectedCollection;
     return Scaffold(
       drawer: NavDrawer(),
       appBar: AppBar(
@@ -128,6 +128,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                 isChecked: false,
                               ),
                             );
+                            pool.saveAllListsToStorage();
+                            pool.getAllListsFromStorage();
                             setState(() {});
                             Navigator.pop(context);
                           },

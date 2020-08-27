@@ -12,9 +12,6 @@ void main() {
         ChangeNotifierProvider(
           create: (context) => ItemsCollectionPool(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => ItemsCollection(),
-        ),
       ],
       child: MaterialApp(
         initialRoute: '/itemsScreen',
