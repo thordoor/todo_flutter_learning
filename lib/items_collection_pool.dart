@@ -1,15 +1,15 @@
 import 'dart:collection';
-import 'package:flutter/foundation.dart';
 import 'package:todo/items_collection.dart';
-import 'dart:convert';
 import 'package:localstorage/localstorage.dart';
 import 'package:todo/models/item.dart';
 
-class ItemsCollectionPool extends ChangeNotifier {
+class ItemsCollectionPool {
   static final LocalStorage storage = LocalStorage('todo.json');
-  ItemsCollection currentlySelectedCollection =
-      _lists.elementAt(storage.getItem('last_opened') ?? 0);
-  static final List<ItemsCollection> _lists = [];
+  ItemsCollection currentlySelectedCollection;
+  // _lists.elementAt(storage.getItem('last_opened') ?? 0);
+  final List<ItemsCollection> _lists = [];
+
+  get current => currentlySelectedCollection;
 
   UnmodifiableListView<ItemsCollection> get lists =>
       UnmodifiableListView(_lists);
@@ -17,38 +17,52 @@ class ItemsCollectionPool extends ChangeNotifier {
   void setCurrentCollection(ItemsCollection itemsCollection) {
     currentlySelectedCollection = itemsCollection;
     storage.setItem('last_opened', _lists.indexOf(itemsCollection));
-    notifyListeners();
   }
 
   void add(ItemsCollection itemsCollection) {
     _lists.add(itemsCollection);
     storage.setItem('todo_list', itemsCollection.toJSONEncodable());
-    notifyListeners();
   }
 
   void remove(ItemsCollection itemsCollection) {
     _lists.remove(itemsCollection);
-    notifyListeners();
   }
 
   saveAllListsToStorage() {
     storage.setItem('all_lists', toJSONEncodable());
   }
 
-  void getAllListsFromStorage() {
+  List<ItemsCollection> getAllListsFromStorage() {
+    _lists.clear();
     var allLists = storage.getItem('all_lists');
-    for (var list in allLists) {
-      List<Item> listItems = [];
-      list['items'].map((item) {
-        listItems.add(Item(title: item['title'], isChecked: item['isChecked']));
-      }).toList();
-      ItemsCollection itemList =
-          ItemsCollection(title: list['title'], storage: storage);
-      itemList.items = listItems;
-      print(itemList);
-      _lists.add(itemList);
+    if (allLists == null) {
+      print('why though');
+      var col = ItemsCollection(title: 'some title', storage: storage);
+      col.items = [
+        Item(
+          title: 'placeholder',
+          isChecked: false,
+        )
+      ];
+      _lists.add(col);
+      currentlySelectedCollection = _lists[0];
+    } else {
+      print('this is good');
+      for (var list in allLists) {
+        List<Item> listItems = [];
+        list['items'].map((item) {
+          listItems
+              .add(Item(title: item['title'], isChecked: item['isChecked']));
+        }).toList();
+        ItemsCollection itemList =
+            ItemsCollection(title: list['title'], storage: storage);
+        itemList.items = listItems;
+        _lists.add(itemList);
+      }
+      currentlySelectedCollection = _lists[0];
     }
     print(_lists);
+    return _lists;
   }
 
   toJSONEncodable() {

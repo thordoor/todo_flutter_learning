@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:todo/items_collection.dart';
-import 'package:provider/provider.dart';
 import 'package:todo/models/item.dart';
 import 'package:todo/items_collection_pool.dart';
 import 'package:todo/widgets/nav_drawer.dart';
@@ -13,14 +12,27 @@ class ItemsScreen extends StatefulWidget {
 class _ItemsScreenState extends State<ItemsScreen> {
   String newItemValue = '';
   String selectText = 'Select all';
+  List<ItemsCollection> lists;
+  ItemsCollectionPool store = ItemsCollectionPool();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _initializeLists();
+  }
+
+  void _initializeLists() {
+    lists = store.getAllListsFromStorage();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var pool = context.watch<ItemsCollectionPool>();
-    ItemsCollection currentTodoList = pool.currentlySelectedCollection;
+    ItemsCollection currentTodoList = lists[0];
     return Scaffold(
-      drawer: NavDrawer(),
+      drawer: NavDrawer(store, lists),
       appBar: AppBar(
-        title: Text(pool.currentlySelectedCollection.title),
+        title: Text(currentTodoList.title),
       ),
       body: SafeArea(
         child: Column(
@@ -128,8 +140,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                 isChecked: false,
                               ),
                             );
-                            pool.saveAllListsToStorage();
-                            pool.getAllListsFromStorage();
+                            store.saveAllListsToStorage();
+                            store.getAllListsFromStorage();
                             setState(() {});
                             Navigator.pop(context);
                           },
