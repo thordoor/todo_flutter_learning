@@ -26,11 +26,15 @@ class _ItemsScreenState extends State<ItemsScreen> {
     lists = store.getAllListsFromStorage();
   }
 
+  void updateStateCb() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    ItemsCollection currentTodoList = lists[0];
+    ItemsCollection currentTodoList = store.current;
     return Scaffold(
-      drawer: NavDrawer(store, lists),
+      drawer: NavDrawer(store, lists, updateStateCb),
       appBar: AppBar(
         title: Text(currentTodoList.title),
       ),
@@ -98,7 +102,9 @@ class _ItemsScreenState extends State<ItemsScreen> {
               ),
               Expanded(
                 child: RaisedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    store.copyList();
+                  },
                   icon: Icon(Icons.content_copy),
                   label: Text('copy list'),
                 ),

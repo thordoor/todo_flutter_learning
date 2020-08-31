@@ -5,8 +5,9 @@ import 'package:todo/items_collection.dart';
 class NavDrawer extends StatelessWidget {
   final ItemsCollectionPool store;
   final List<ItemsCollection> list;
+  final Function updateStateCb;
 
-  NavDrawer(this.store, this.list);
+  NavDrawer(this.store, this.list, this.updateStateCb);
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -33,6 +34,7 @@ class NavDrawer extends StatelessWidget {
                   onTap: () {
                     store.setCurrentCollection(list.elementAt(index));
                     Navigator.pop(context);
+                    updateStateCb();
                   },
                   title: Text(
                     list.elementAt(index).title,
