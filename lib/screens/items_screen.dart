@@ -47,6 +47,12 @@ class _ItemsScreenState extends State<ItemsScreen> {
       drawer: NavDrawer(store, lists, updateStateCb),
       appBar: AppBar(
         title: Text(currentTodoList.title),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.edit),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -56,16 +62,25 @@ class _ItemsScreenState extends State<ItemsScreen> {
                 shrinkWrap: true,
                 itemCount: currentTodoList.items.length,
                 itemBuilder: (context, index) {
-                  return CheckboxListTile(
-                    onChanged: (val) {
-                      setState(() {
-                        currentTodoList.toggleIsChecked(index, val);
-                      });
+                  return InkWell(
+                    onLongPress: () {
+                      currentTodoList
+                          .remove(currentTodoList.items.elementAt(index));
+                      store.saveAllListsToStorage();
+                      store.getAllListsFromStorage();
+                      setState(() {});
                     },
-                    controlAffinity: ListTileControlAffinity.leading,
-                    value: currentTodoList.items.elementAt(index).isChecked,
-                    title: Text(
-                      '${currentTodoList.items.elementAt(index).title}',
+                    child: CheckboxListTile(
+                      onChanged: (val) {
+                        setState(() {
+                          currentTodoList.toggleIsChecked(index, val);
+                        });
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,
+                      value: currentTodoList.items.elementAt(index).isChecked,
+                      title: Text(
+                        '${currentTodoList.items.elementAt(index).title}',
+                      ),
                     ),
                   );
                 },

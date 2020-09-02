@@ -53,7 +53,8 @@ class ItemsCollectionPool {
             itemList.items = listItems;
             add(itemList);
           }
-          currentlySelectedCollection = current ?? _lists[0];
+          currentlySelectedCollection =
+              current ?? _lists[storage.getItem('last_opened')];
         } else {
           ItemsCollection col =
               ItemsCollection(title: 'My first list', storage: storage);
