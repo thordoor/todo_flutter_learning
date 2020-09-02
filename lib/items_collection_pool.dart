@@ -5,6 +5,13 @@ import 'package:localstorage/localstorage.dart';
 import 'package:todo/models/item.dart';
 
 class ItemsCollectionPool {
+  static final ItemsCollectionPool _itemsCollectionPool =
+      ItemsCollectionPool._internal();
+  factory ItemsCollectionPool() {
+    return _itemsCollectionPool;
+  }
+  ItemsCollectionPool._internal();
+
   static final LocalStorage storage = LocalStorage('todo.json');
 
   ItemsCollection currentlySelectedCollection;
@@ -53,8 +60,16 @@ class ItemsCollectionPool {
             itemList.items = listItems;
             add(itemList);
           }
-          currentlySelectedCollection =
-              current ?? _lists[storage.getItem('last_opened')];
+          if (current != null) {
+            currentlySelectedCollection = current;
+          } else {
+            try {
+              currentlySelectedCollection =
+                  _lists[storage.getItem('last_opened')];
+            } catch (e) {
+              currentlySelectedCollection = _lists[0];
+            }
+          }
         } else {
           ItemsCollection col =
               ItemsCollection(title: 'My first list', storage: storage);

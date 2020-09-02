@@ -49,7 +49,12 @@ class _ItemsScreenState extends State<ItemsScreen> {
         title: Text(currentTodoList.title),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                '/editScreen',
+              );
+            },
             icon: Icon(Icons.edit),
           ),
         ],
