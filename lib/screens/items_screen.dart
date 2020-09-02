@@ -17,13 +17,15 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _initializeLists();
   }
 
-  void _initializeLists() {
-    lists = store.getAllListsFromStorage();
+  Future _initializeLists() async {
+    await store.getAllListsFromStorage();
+    setState(() {
+      lists = store.lists;
+    });
   }
 
   void updateStateCb() {
@@ -32,6 +34,14 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (lists == null) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     ItemsCollection currentTodoList = store.current;
     return Scaffold(
       drawer: NavDrawer(store, lists, updateStateCb),
@@ -41,23 +51,25 @@ class _ItemsScreenState extends State<ItemsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: currentTodoList.items.length,
-              itemBuilder: (context, index) {
-                return CheckboxListTile(
-                  onChanged: (val) {
-                    setState(() {
-                      currentTodoList.toggleIsChecked(index, val);
-                    });
-                  },
-                  controlAffinity: ListTileControlAffinity.leading,
-                  value: currentTodoList.items.elementAt(index).isChecked,
-                  title: Text(
-                    '${currentTodoList.items.elementAt(index).title}',
-                  ),
-                );
-              },
+            Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: currentTodoList.items.length,
+                itemBuilder: (context, index) {
+                  return CheckboxListTile(
+                    onChanged: (val) {
+                      setState(() {
+                        currentTodoList.toggleIsChecked(index, val);
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                    value: currentTodoList.items.elementAt(index).isChecked,
+                    title: Text(
+                      '${currentTodoList.items.elementAt(index).title}',
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

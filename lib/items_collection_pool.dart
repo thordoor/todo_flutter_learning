@@ -8,7 +8,6 @@ class ItemsCollectionPool {
   static final LocalStorage storage = LocalStorage('todo.json');
 
   ItemsCollection currentlySelectedCollection;
-  // _lists.elementAt(storage.getItem('last_opened') ?? 0);
   final List<ItemsCollection> _lists = [];
 
   get current => currentlySelectedCollection;
@@ -24,47 +23,51 @@ class ItemsCollectionPool {
   void add(ItemsCollection itemsCollection) {
     _lists.add(itemsCollection);
     storage.setItem('todo_list', itemsCollection.toJSONEncodable());
+    saveAllListsToStorage();
   }
 
   void remove(ItemsCollection itemsCollection) {
     _lists.remove(itemsCollection);
+    storage.setItem('todo_list', itemsCollection.toJSONEncodable());
+    saveAllListsToStorage();
   }
 
   saveAllListsToStorage() {
     storage.setItem('all_lists', toJSONEncodable());
   }
 
-  List<ItemsCollection> getAllListsFromStorage() {
+  Future getAllListsFromStorage() async {
     _lists.clear();
-    storage.ready.then((result) {
+    return storage.ready.then((result) {
       if (result == true) {
         var allLists = storage.getItem('all_lists');
-        _lists.clear();
-        for (var list in allLists) {
-          List<Item> listItems = [];
-          list['items'].map((item) {
-            listItems
-                .add(Item(title: item['title'], isChecked: item['isChecked']));
-          }).toList();
-          ItemsCollection itemList =
-              ItemsCollection(title: list['title'], storage: storage);
-          itemList.items = listItems;
-          _lists.add(itemList);
+        if (allLists != null) {
+          for (var list in allLists) {
+            List<Item> listItems = [];
+            list['items'].map((item) {
+              listItems.add(
+                  Item(title: item['title'], isChecked: item['isChecked']));
+            }).toList();
+            ItemsCollection itemList =
+                ItemsCollection(title: list['title'], storage: storage);
+            itemList.items = listItems;
+            add(itemList);
+          }
+          currentlySelectedCollection = current ?? _lists[0];
+        } else {
+          ItemsCollection col =
+              ItemsCollection(title: 'My first list', storage: storage);
+          col.items = [
+            Item(
+              title: 'My first item',
+              isChecked: false,
+            )
+          ];
+          add(col);
+          currentlySelectedCollection = _lists[0];
         }
-        currentlySelectedCollection = _lists[0];
       }
-      return _lists;
     });
-    var col = ItemsCollection(title: 'My first list', storage: storage);
-    col.items = [
-      Item(
-        title: 'My first item',
-        isChecked: false,
-      )
-    ];
-    _lists.add(col);
-    currentlySelectedCollection = _lists[0];
-    return _lists;
   }
 
   copyList() {
